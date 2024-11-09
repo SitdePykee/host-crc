@@ -44,11 +44,10 @@ const DecodePage = () => {
     if (result) {
       const isValid = Processor.dataReceive(data, divisor);
       setOldData(isValid);
-      setIsReadOnly(true);
     } else {
       setOldData(null);
-      setIsReadOnly(false);
     }
+    setIsReadOnly(true);
     setIsValid(result);
   };
 
@@ -60,6 +59,8 @@ const DecodePage = () => {
   useEffect(() => {
     setIsValid(null);
     setIsReadOnly(false);
+    setErrorDivisor('');
+    setErrorData('')
   }, [data, divisor]);
 
   return (
