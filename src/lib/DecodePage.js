@@ -10,33 +10,46 @@ const DecodePage = () => {
   const [errorData, setErrorData] = useState("");
   const [errorDivisor, setErrorDivisor] = useState("");
 
-  const handleCheck = () => {
+  const validate = () => {
+    let isValid = true;
 
-    if(data === undefined || data === null || data === "") {
-      setErrorData("received data cannot be blank")
+    if (data === undefined || data === null || data === "") {
+      setErrorData("Received data cannot be blank");
+      isValid = false;
+    } else if (!Processor.kiemTraBit(data)) {
+      setErrorData("Received data is incorrectly formatted");
+      isValid = false;
     } else {
       setErrorData(null);
     }
-    if(divisor === undefined || divisor === null || divisor === "") {
-      setErrorDivisor("divisor cannot be blank")
+
+    if (divisor === undefined || divisor === null || divisor === "") {
+      setErrorDivisor("Divisor cannot be blank");
+      isValid = false;
+    } else if (!Processor.kiemTraBit(divisor)) {
+      setErrorDivisor("Divisor is incorrectly formatted");
+      isValid = false;
     } else {
       setErrorDivisor(null);
     }
 
-    if(data && divisor) {
-      const result = Processor.checkCRC(data, divisor);
+    return isValid;
+  };
 
-      if (result) {
-        const isValid = Processor.dataReceive(data, divisor);
-        setOldData(isValid);
-        setIsReadOnly(true);
-      } else {
-        setOldData(null);
-        setIsReadOnly(false);
-      }
-      setIsValid(result);
+  const handleCheck = () => {
+    if (!validate()) return;
+
+    const result = Processor.checkCRC(data, divisor);
+
+    if (result) {
+      const isValid = Processor.dataReceive(data, divisor);
+      setOldData(isValid);
+      setIsReadOnly(true);
+    } else {
+      setOldData(null);
+      setIsReadOnly(false);
     }
-    
+    setIsValid(result);
   };
 
   const handleReset = () => {
@@ -72,7 +85,9 @@ const DecodePage = () => {
           id="input_divisor"
           readOnly={isReadOnly}
         />
-        {errorDivisor && <p className="mt-2 text-sm text-red-500">{errorDivisor}</p>}
+        {errorDivisor && (
+          <p className="mt-2 text-sm text-red-500">{errorDivisor}</p>
+        )}
         <button
           onClick={handleCheck}
           className="bg-green-500 mt-4 text-white px-4 py-2 rounded hover:bg-green-600"

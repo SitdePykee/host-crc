@@ -8,21 +8,36 @@ const EncodePage = () => {
   const [errorData, setErrorData] = useState("");
   const [errorDivisor, setErrorDivisor] = useState("");
 
-  const handleEncode = () => {
+  const validate = () => {
+    let isValid = true;
+
     if (data === undefined || data === null || data === "") {
-      setErrorData("binary data cannot be blank");
+      setErrorData("Binary data cannot be blank");
+      isValid = false;
+    } else if (!Processor.kiemTraBit(data)) {
+      setErrorData("Binary data is incorrectly formatted");
+      isValid = false;
     } else {
       setErrorData(null);
     }
+
     if (divisor === undefined || divisor === null || divisor === "") {
-      setErrorDivisor("divisor cannot be blank");
+      setErrorDivisor("Divisor cannot be blank");
+      isValid = false;
+    } else if (!Processor.kiemTraBit(divisor)) {
+      setErrorDivisor("Divisor is incorrectly formatted");
+      isValid = false;
     } else {
       setErrorDivisor(null);
     }
-    if (data && divisor) {
-      const result = Processor.dataSend(data, divisor);
-      setEncodedData(result);
-    }
+
+    return isValid;
+  };
+
+  const handleEncode = () => {
+    if (!validate()) return;
+    const result = Processor.dataSend(data, divisor);
+    setEncodedData(result);
   };
 
   return (
@@ -44,7 +59,9 @@ const EncodePage = () => {
           onChange={(e) => setDivisor(e.target.value)}
           className="border p-2 rounded mt-4 w-full"
         />
-        {errorDivisor && <p className="mt-2 text-sm text-red-500">{errorDivisor}</p>}
+        {errorDivisor && (
+          <p className="mt-2 text-sm text-red-500">{errorDivisor}</p>
+        )}
         <button
           onClick={handleEncode}
           className="bg-blue-500 text-white mt-4 px-4 py-2 rounded hover:bg-blue-600"
